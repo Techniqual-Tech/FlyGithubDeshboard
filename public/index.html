@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Repositories</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="body">
+        <div class="nav">
+            <form id="repoForm">
+                <input type="text" id="username" name="username" value="johnpapa" required>
+                <button type="submit" class="submitbtn">Repos ?</button>
+            </form>
+        </div>
+        <div class="upper">
+            <div class="imgdata">
+
+                <div class="image"></div>
+                <div class="biodata">
+                    <p id="bio_name" class="bio"><a href="#">name</a>(<small>company</small>)</p>
+                    <p id="bio" class="bio">bio</p>
+                    <p id="bio_loc" class="bio"><i class="fas fa-map-marker-alt"></i> location</p>
+                    <p id="bio_twitter" class="bio"><a href="">https://twitter.com/${twitterUsername}</a></p>
+                </div>
+            </div>
+            <div class="link">www.link.com</div>
+        </div>
+        <div class="bodycontent">
+            <!-- <div class="child">
+                <p class="name"><b>AttendanceMangementSystem</b>(public)</p>
+                <p class="description">Python Software To take Attendance Using Qr code</p>
+                <div class="lang">
+                    <ul>
+                        <li>Python1</li>
+                        <li>Python2</li>
+                        <li>Python3</li>
+                        <li>Python1</li>
+                        <li>Python2</li>
+                        <li>Python3</li>
+                    </ul>
+                </div>
+            </div> -->
+
+
+        </div>
+        <div class="custompagination">
+            <div class="pagin">
+                <a href="#" onclick="page('prev')"><b>&laquo;</b></a>
+                <input type="number" id="perPage" min="1" max="100" value="10">
+                <button onclick="setperPage()">perPage</button>
+                <a href="#" onclick="page('next')"><b>&raquo;</b></a>
+            </div>
+        </div>
+        <div class="aboutme">
+            <p>@design and develop by Vicky Gupta</p>
+        </div>
+        <!-- <div class="lower">
+            <div class="pagination">
+                
+                <a href="#">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                
+            </div>
+        </div> -->
+    </div>
+
+    <!-- <ul id="repoList"></ul> -->
+
+    <script>
+        var currentpage = 1;
+        var repoperPage = 10;
+        var nextmove = "yes";
+        function setperPage() {
+            if (document.getElementById('perPage').value>100){
+                repoperPage=100
+                document.getElementById('perPage').value=100
+            }else if (document.getElementById('perPage').value<1){
+                repoperPage=1
+                document.getElementById('perPage').value=1
+            }else{
+                repoperPage = document.getElementById('perPage').value;
+            }
+        }
+        function page(operation) {
+            if (operation == "prev") {
+                if (currentpage > 1) {
+                    nextmove="yes";
+                    console.log("Bcurrentpage" + currentpage);
+                    currentpage = currentpage - 1;
+                    console.log("Acurrentpage" + currentpage);
+                    fetchRepos(document.getElementById('username').value);
+                }
+            }
+            else if (operation == "next") {
+                console.log("Bcurrentpage" + currentpage);
+                if (nextmove == "yes") {
+                    currentpage = currentpage + 1;
+                    console.log("Acurrentpage" + currentpage);
+                    fetchRepos(document.getElementById('username').value);
+                }
+            }
+        }
+        document.getElementById('repoForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            fetchRepos(document.getElementById('username').value);
+        });
+
+        async function fetchRepos(username) {
+            try {
+                //for biodata
+                const bioresponse = await fetch(`/biodata/${username}`);
+                const bio = await bioresponse.json();
+                console.log("biodata" + bio)
+
+                //set dp
+                profilepicture_url = bio.avatar_url;
+                console.log(profilepicture_url);
+                profilepicture = document.getElementsByClassName('image')[0];
+                profilepicture.style.backgroundImage = 'url(' + profilepicture_url + ')';
+
+                //biodata updaet
+
+                const bio_name = document.getElementById('bio_name');
+                bio_name.innerHTML = `<a href="${bio.html_url}" target="_blank">${bio.name}</a> (<small>${bio.company}</small>)`
+
+                const bi = document.getElementById('bio');
+                bi.textContent = bio.bio;
+
+                const location = document.getElementById('bio_loc');
+                location.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${bio.location}`;
+
+                const twitter = document.getElementById('bio_twitter');
+                twitter.innerHTML = `<a href="https://twitter.com/${bio.twitter_username}" target="_blank" >https://twitter.com/${bio.twitter_username}</a>`;
+
+                //link of webiste
+                const weblink = document.getElementsByClassName('link')[0];
+                weblink.innerHTML = `<a href="${bio.blog}" target="_blank">${bio.blog}</a>`
+
+
+
+                //for repositoires
+
+                const repoList = document.querySelector('.bodycontent');
+                //repoList.style.backgroundImage= "url('loading.gif')";
+                repoList.classList.add('loading');
+
+                console.log(`/repos/${username}?page=${currentpage}&per_page=${repoperPage}`);
+                const response = await fetch(`/repos/${username}?page=${currentpage}&per_page=${repoperPage}`);
+                const repos = await response.json();
+                console.log(repos)
+
+                if (repos.length == 0 || repos == null) {
+                    console.log("no repository");
+                    repoList.classList.remove('loading');
+
+                    //const repoList = document.querySelector('.bodycontent');
+                    nextmove="no";
+                    repoList.innerHTML = '<p class="norepository">No Repository further</p>';
+                } else {
+                    repoList.classList.remove('loading');
+
+                    //const repoList = document.querySelector('.bodycontent');
+                    repoList.innerHTML = '';
+
+                    repos.forEach(repo => {
+                        const child = document.createElement('div');
+                        child.className = 'child';
+
+                        console.log("reponame" + repo.name);
+                        const p = document.createElement('p');
+                        p.innerHTML = `<a href="${repo.html_url}" target="_blank">${repo.name}</a>`;
+                        p.className = 'name';
+
+
+                        const p2 = document.createElement('p');
+                        p2.textContent = repo.description;
+                        p2.className = 'description';
+
+                        //langauge div
+                        const lang = document.createElement('div');
+                        lang.className = 'lang';
+                        // only single element is present then
+                        lang.innerHTML = `<p class="language">${repo.language}</p>`;
+
+
+
+                        // Get the reference to the <ul> element in your HTML
+                        //const ul = document.createElement('ul');
+
+                        // Loop through the data and create <li> elements if it is array then this will use
+                        /* langlist = repo.language;
+                        console.log(langlist);
+                        if (langlist != null) {
+                            langlist.forEach(item => {
+                                const liElement = document.createElement('li');
+                                liElement.textContent = item.text;
+                                ul.appendChild(liElement);
+                            });
+                        } */
+
+                        child.appendChild(p);
+                        child.appendChild(p2);
+                        child.appendChild(lang);
+                        //lang.appendChild(ul) if array then this will use
+                        repoList.appendChild(child);
+
+
+
+                    });
+                }
+
+            } catch (error) {
+                console.error(error);
+                const repoList = document.querySelector('.bodycontent');
+                repoList.classList.remove('loading');
+                repoList.innerHTML = `<p class="norepository">'User not found or repositories not accessible.' </p>`;
+            }
+        }
+        fetchRepos('johnpapa');
+    </script>
+</body>
+
+</html>
