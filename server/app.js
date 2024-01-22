@@ -5,7 +5,7 @@ const port = 3000;
 
 app.use(express.static('public'));
 
-const accesstoken = "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";
+/* const accesstoken = "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"; */
 
 app.get('/repos/:username', async (req, res) => {
   const username = req.params.username;
@@ -21,9 +21,9 @@ app.get('/repos/:username', async (req, res) => {
         page,
         per_page: perPage,
       },
-      headers: {
+      /* headers: {
         Authorization: `Bearer ${accesstoken}`,
-      },
+      }, */
     });
     const repos = response.data;
     res.json(repos);
@@ -38,9 +38,9 @@ app.get('/biodata/:username', async (req, res) => {
 
   try {
     const response = await axios.get(`https://api.github.com/users/${username}`, {
-      headers: {
+      /* headers: {
         Authorization: `Bearer ${accesstoken}`,
-      },
+      }, */
     });
     const bio = response.data;
     res.json(bio);
