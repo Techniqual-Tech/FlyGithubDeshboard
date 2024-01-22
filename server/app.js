@@ -5,7 +5,7 @@ const port = 3000;
 
 app.use(express.static('public'));
 
-const accesstoken = "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";
+const accesstoken = "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";
 
 app.get('/repos/:username', async (req, res) => {
   const username = req.params.username;
