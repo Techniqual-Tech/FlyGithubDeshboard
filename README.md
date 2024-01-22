@@ -13,7 +13,7 @@ package.json:
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server/app.js"
   },
   "author": "Vicky",
   "license": "ISC",
@@ -22,7 +22,7 @@ package.json:
     "express": "^4.18.2"
   }
 }
-3.run "node server.js"
+3.run "node server/app.js"
 4.open browser and type "localhost:3000"
 5.project open with default github user "johnpapa"
 
