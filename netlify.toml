@@ -1,0 +1,8 @@
+[build]
+  command = "npm run start" # Replace with your build command if needed
+  functions = "server/app.js"     # Path to your server code
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
